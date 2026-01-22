@@ -1,0 +1,2 @@
+recursive-include ullama_python/libs *.dll
+recursive-include ullama_python *.py
