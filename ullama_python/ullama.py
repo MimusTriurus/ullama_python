@@ -87,6 +87,18 @@ class ULlamaWrapper:
         # region Knowledge Base
         self.lib.ullama_kb_make.restype = ctypes.c_void_p
 
+        self.lib.ullama_kb_init.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_void_p]
+        self.lib.ullama_kb_init.restype = ctypes.c_bool
+
+        self.lib.ullama_kb_addChunk.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_char_p
+        ]
+
+        self.lib.ullama_kb_update.argtypes = [
+            ctypes.c_void_p
+        ]
+
         self.lib.ullama_kb_search.argtypes = [
             ctypes.c_void_p,
             ctypes.c_char_p,
@@ -94,6 +106,8 @@ class ULlamaWrapper:
             ctypes.POINTER(ctypes.c_float)
         ]
         self.lib.ullama_kb_search.restype = ctypes.c_bool
+
+        self.lib.ullama_kb_dispose.argtypes = [ctypes.c_void_p]
         # endregion
 
     def generate_system_prompt(self, npc, user, actions, example):

@@ -1,0 +1,10 @@
+weapon | pistol, rifle, shotgun, SMG, sniper_rifle, rocket_launcher
+weapon upgrades | scope, extended_magazine, silencer, laser_sight, grip, recoil_reducer
+medications | medkit, bandage, antidote, adrenaline_shot, painkillers, revive_kit
+ammo bullets | .45 for pistol, .203 for rifle, 12/76 for shotgun, .308 for sniper_rifle, RGD for rocket_launcher
+pistol | Weapon: Colt 1911, Cost: 100 Gold, Amount: 1
+rifle | Weapon: M4A1, Cost: 500 Gold, Amount: 1
+shotgun | Weapon: Remington 870, Cost: 250 Gold, Amount: 1
+silencer | Upgrade: Silencer, Cost: 10 Gold, Amount: 1
+bandage | Medication: Bandage, Cost: 1 Gold, Amount: 1
+ammo pistol | Ammo: .45, Cost: 1, Amount: 1
