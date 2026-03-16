@@ -185,12 +185,13 @@ ThinkText ::= Sentence | Sentence Sentence | Sentence Sentence Sentence
 
     common_rules = r'''
 nl ::= "\n"
-Action ::= "{" ws "\"name\":" ws actions "," ws "\"parameters\":" ws stringlist "}"
+Action ::= "{" ws "\"name\":" ws actions "," ws "\"parameters\":" ws dict "}"
 Response ::= "{" ws "\"emotion\":" ws emotions "," ws "\"answer\":" ws string "," ws "\"action\":" ws Action "}"
 string ::= "\"" ([^"]*) "\""
 ws ::= [ \t\n]*
-stringlist ::= "[" ws "]" | "[" ws string ("," ws string)* ws "]"
-'''
+kv ::= string ws ":" ws string
+dict ::= "{" ws "}" | "{" ws kv ("," ws kv)* ws "}"
+    '''
 
     emotions_rule = "emotions ::= " + " | ".join([rf'"\"{e}\""' for e in emotions])
     actions_rule = "actions ::= " + " | ".join([rf'"\"{a["name"]}\""' for a in actions])
