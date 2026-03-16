@@ -34,6 +34,10 @@ Allowed actions and STRICT parameter rules:
 5. SoldOut
    parameters: ["<item>"] where <item> is one of AllowedItemParameters
    description: User wants to buy BUT amount == 0.
+6. ShowItemInfo
+   parameters: ["<item>"] where <item> is one of AllowedItemParameters
+   description: User want to see the item before buying
+
 
 AllowedShowItemsParameters:
 - weapon
@@ -61,6 +65,12 @@ AllowedItemParameters:
 - laser_sight
 - grip
 - recoil_reducer
+- pistol's ammo
+- rifle's ammo
+- shotgun's ammo
+- SMG's ammo
+- sniper_rifle's ammo
+- rocket_launcher's ammo
 
 Your task:
 1. Read and interpret the user's JSON input.
@@ -76,3 +86,4 @@ Behavior rules:
 - If user asks to see goods -> ShowItems.
 - If user wants to buy and has enough gold -> SellItem.
 - If request is unclear or unrelated -> DoNothing.
+- If user wants to see the item -> ShowItemInfo.
