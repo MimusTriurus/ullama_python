@@ -50,12 +50,12 @@ class ULlamaWrapper:
 
     def _setup_api(self):
         # Tools
-        self.lib.ullama_loadModel.argtypes = [ctypes.c_char_p]
-        self.lib.ullama_loadModel.restype = ctypes.c_void_p
+        self.lib.ullama_load_model.argtypes = [ctypes.c_char_p]
+        self.lib.ullama_load_model.restype = ctypes.c_void_p
 
-        self.lib.ullama_freeModel.argtypes = [ctypes.c_void_p]
+        self.lib.ullama_free_model.argtypes = [ctypes.c_void_p]
 
-        self.lib.ullama_makeSystemPrompt.argtypes = [
+        self.lib.ullama_make_system_prompt.argtypes = [
             ctypes.c_char_p,
             ctypes.c_int,
             ctypes.c_char_p,
@@ -63,25 +63,25 @@ class ULlamaWrapper:
             ctypes.c_char_p,
             ctypes.c_char_p
         ]
-        self.lib.ullama_makeSystemPrompt.restype = ctypes.c_int
+        self.lib.ullama_make_system_prompt.restype = ctypes.c_int
 
         # region LLM Worker
-        self.lib.ullama_worker_make.restype = ctypes.c_void_p
+        self.lib.ullama_make.restype = ctypes.c_void_p
 
-        self.lib.ullama_worker_init.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_void_p]
-        self.lib.ullama_worker_init.restype = ctypes.c_bool
+        self.lib.ullama_init.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_void_p]
+        self.lib.ullama_init.restype = ctypes.c_bool
 
-        self.lib.ullama_worker_run.argtypes = [ctypes.c_void_p]
+        self.lib.ullama_run.argtypes = [ctypes.c_void_p]
 
-        self.lib.ullama_worker_ask.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+        self.lib.ullama_ask.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
 
-        self.lib.ullama_worker_getToken.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
-        self.lib.ullama_worker_getToken.restype = ctypes.c_bool
+        self.lib.ullama_get_token.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
+        self.lib.ullama_get_token.restype = ctypes.c_bool
 
-        self.lib.ullama_worker_isSpeaking.argtypes = [ctypes.c_void_p]
-        self.lib.ullama_worker_isSpeaking.restype = ctypes.c_bool
+        self.lib.ullama_is_speaking.argtypes = [ctypes.c_void_p]
+        self.lib.ullama_is_speaking.restype = ctypes.c_bool
 
-        self.lib.ullama_worker_dispose.argtypes = [ctypes.c_void_p]
+        self.lib.ullama_dispose.argtypes = [ctypes.c_void_p]
         # endregion
 
         # region Knowledge Base
@@ -90,7 +90,7 @@ class ULlamaWrapper:
         self.lib.ullama_kb_init.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_void_p]
         self.lib.ullama_kb_init.restype = ctypes.c_bool
 
-        self.lib.ullama_kb_addChunk.argtypes = [
+        self.lib.ullama_kb_add_chunk.argtypes = [
             ctypes.c_void_p,
             ctypes.c_char_p
         ]

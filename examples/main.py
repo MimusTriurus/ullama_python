@@ -115,7 +115,7 @@ if __name__ == "__main__":
     kb_init_result = False
     kb = {}
     if os.path.isfile(kb_cfg_f_path) and os.path.isfile(emb_model_f_path):
-        emb_model = api.lib.ullama_loadModel(emb_model_f_path.encode(ENCODING))
+        emb_model = api.lib.ullama_load_model(emb_model_f_path.encode(ENCODING))
         kb_worker_ptr = api.lib.ullama_kb_make()
         kb_cfg = json.loads(read_file(kb_cfg_f_path))
         kb_cfg['model'] = emb_model_f_path
@@ -125,7 +125,7 @@ if __name__ == "__main__":
             kb = read_kb_file(kb_triggers_f_path)
             if kb:
                 for k, v in kb.items():
-                    api.lib.ullama_kb_addChunk(kb_worker_ptr, k.encode(ENCODING))
+                    api.lib.ullama_kb_add_chunk(kb_worker_ptr, k.encode(ENCODING))
                 api.lib.ullama_kb_update(kb_worker_ptr)
 
     ullm_config = load_ullm_config(f'{llm_cfg_f_path}')
@@ -135,17 +135,17 @@ if __name__ == "__main__":
     ullm_config['system_prompt'] = make_system_prompt(system_prompt_f_path)
     actions = parse_actions_from_file(actions_f_path)
     grammar_string = build_grammar(emotions, actions, use_thinking)
-    ullm_config['grammar'] = grammar_string
+    #ullm_config['grammar'] = grammar_string
 
     ullama_cfg_json_str = json.dumps(ullm_config).encode(ENCODING)
 
     try:
-        model = api.lib.ullama_loadModel(ullama_cfg_json_str)
-        worker = api.lib.ullama_worker_make()
-        if api.lib.ullama_worker_init(worker, ullama_cfg_json_str, model):
+        model = api.lib.ullama_load_model(ullama_cfg_json_str)
+        worker = api.lib.ullama_make()
+        if api.lib.ullama_init(worker, ullama_cfg_json_str, model):
             token_buf = ctypes.create_string_buffer(BUFFER_SIZE)
 
-            api.lib.ullama_worker_run(worker)
+            api.lib.ullama_run(worker)
 
             file_name = Path(dataset_f_path).stem
 
@@ -154,7 +154,7 @@ if __name__ == "__main__":
 
             user_requests = read_dataset_file(dataset_f_path)
             for request_dict in user_requests[:requests_count]:
-                request_of_user = request_dict['request_of_user']
+                request_of_user = request_dict['request']
 
                 if kb_init_result:
                     request = json.dumps(request_dict)
@@ -167,22 +167,23 @@ if __name__ == "__main__":
                     if chunk_found:
                         kb_content = list(kb.values())
                         context = kb_content[kb_chunk_idx.value]
-                        if not request_dict['context'] and kb_chunk_score.value >= kb_threshold:
-                            request_dict['context'] = context
-                        #print(f"==> KB chunk. Score: {kb_chunk_score.value} Context: {context}")
+                        if not request_dict['npc_state'] and kb_chunk_score.value >= kb_threshold:
+                            request_dict['npc_state'] = context
+                        print(f"==> KB chunk. Score: {kb_chunk_score.value} Context: {context}")
 
                 request = json.dumps(request_dict)
 
-                api.lib.ullama_worker_ask(worker, request.encode(ENCODING))
+                api.lib.ullama_ask(worker, request.encode(ENCODING))
                 response = ''
-                while api.lib.ullama_worker_isSpeaking(worker):
-                    if api.lib.ullama_worker_getToken(worker, token_buf, BUFFER_SIZE):
+                while api.lib.ullama_is_speaking(worker):
+                    if api.lib.ullama_get_token(worker, token_buf, BUFFER_SIZE):
                         response += token_buf.value.decode(ENCODING)
 
                 think_block = None
                 response_dict = {}
                 try:
-                    think_block, response_dict = split_think_and_json(response)
+                    #think_block, response_dict = split_think_and_json(response)
+                    response_dict = json.loads(response)
                 except Exception as e:
                     print(e)
                     continue
@@ -201,8 +202,8 @@ if __name__ == "__main__":
 
                 print(f'--------------------')
                 print(f"User: {request_of_user}")
-                if request_dict['context']:
-                    print(f"Context: {request_dict['context']}")
+                if request_dict['npc_state']:
+                    print(f"Context: {request_dict['npc_state']}")
                 print('')
                 print(f"Assistant: {answer}")
                 print(f"Action: {action_name}")
@@ -210,14 +211,14 @@ if __name__ == "__main__":
                 print('')
 
         else:
-            api.lib.ullama_worker_dispose(worker)
-            api.lib.ullama_freeModel(model)
+            api.lib.ullama_dispose(worker)
+            api.lib.ullama_free_model(model)
 
-        api.lib.ullama_worker_dispose(worker)
-        api.lib.ullama_freeModel(model)
+        api.lib.ullama_dispose(worker)
+        api.lib.ullama_free_model(model)
 
         if emb_model:
-            api.lib.ullama_freeModel(emb_model)
+            api.lib.ullama_free_model(emb_model)
         if kb_worker_ptr:
             api.lib.ullama_kb_dispose(kb_worker_ptr)
 
