@@ -5,6 +5,8 @@
 ####  pip uninstall dist/ullama_python-0.0.1-py3-none-any.whl
 
 #### pip install git+https://github.com/MimusTriurus/ullama_python.git@main
+#### pip install git+https://github.com/MimusTriurus/ullama_python.git@0.1.1
+
 
 ### LLM model configuration
 
