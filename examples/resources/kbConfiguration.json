@@ -1,4 +1,5 @@
 {
   "model": "",
-  "n_gpu_layers": 0
+  "n_gpu_layers": 0,
+  "lora_adapter": ""
 }

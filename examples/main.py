@@ -79,6 +79,7 @@ if __name__ == "__main__":
     lora_adapter_f_path = os.getenv('LORA_ADAPTER_F_PATH', '')
     actions_f_path = os.getenv('ACTIONS_F_PATH', '')
     emb_model_f_path = os.getenv('EMB_MODEL_F_PATH', 'bge-base-en-v1.5-f16')
+    lora_emb_model_f_path = os.getenv('LORA_EMB_MODEL_F_PATH', '')
     requests_count = int(os.getenv('MAX_REQUESTS_COUNT', 10))
     use_thinking = os.getenv('USE_THINKING', 'false').lower() in ("1", "true", "yes", "on")
     system_prompt_f_path = os.getenv('SYSTEM_PROMPT_F_PATH', '')
@@ -119,8 +120,10 @@ if __name__ == "__main__":
         kb_worker_ptr = api.lib.ullama_kb_make()
         kb_cfg = json.loads(read_file(kb_cfg_f_path))
         kb_cfg['model'] = emb_model_f_path
+        if lora_emb_model_f_path:
+            kb_cfg['lora_adapter'] = lora_emb_model_f_path
         kb_cgf_str = json.dumps(kb_cfg).encode(ENCODING)
-        kb_init_result = api.lib.ullama_kb_init(kb_worker_ptr, kb_cgf_str, emb_model)
+        kb_init_result = api.lib.ullama_kb_init(kb_worker_ptr, kb_cgf_str, None)
         if kb_init_result:
             kb = read_kb_file(kb_triggers_f_path)
             if kb:
@@ -158,18 +161,37 @@ if __name__ == "__main__":
 
                 if kb_init_result:
                     request = json.dumps(request_dict)
+
+                    results = api.search_top_n(
+                        kb_handle=kb_worker_ptr,
+                        query=request,
+                        top_k=1
+                    )
+
+                    if results:
+                        kb_chunk_idx = results[0][0]
+                        kb_chunk_score = results[0][1]
+                        kb_content = list(kb.values())
+                        context = kb_content[kb_chunk_idx]
+                        if not request_dict['npc_state'] and kb_chunk_score >= kb_threshold:
+                            request_dict['npc_state'] = context
+                        print(f"==> KB chunk. Score: {kb_chunk_score} Context: {context}")
+                    # old search method
+                    '''
                     chunk_found = api.lib.ullama_kb_search(
                         kb_worker_ptr,
                         request.encode(ENCODING),
                         ctypes.byref(kb_chunk_idx),
                         ctypes.byref(kb_chunk_score)
                     )
+
                     if chunk_found:
                         kb_content = list(kb.values())
                         context = kb_content[kb_chunk_idx.value]
                         if not request_dict['npc_state'] and kb_chunk_score.value >= kb_threshold:
                             request_dict['npc_state'] = context
                         print(f"==> KB chunk. Score: {kb_chunk_score.value} Context: {context}")
+                    '''
 
                 request = json.dumps(request_dict)
 

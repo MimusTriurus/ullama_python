@@ -107,6 +107,15 @@ class ULlamaWrapper:
         ]
         self.lib.ullama_kb_search.restype = ctypes.c_bool
 
+        self.lib.ullama_kb_search_top_n.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_char_p,
+            ctypes.c_int,
+            ctypes.POINTER(ctypes.c_int),
+            ctypes.POINTER(ctypes.c_float),
+        ]
+        self.lib.ullama_kb_search_top_n.restype = ctypes.c_int
+
         self.lib.ullama_kb_dispose.argtypes = [ctypes.c_void_p]
         # endregion
 
@@ -127,6 +136,22 @@ class ULlamaWrapper:
             kb_ptr, query.encode('utf-8'), ctypes.byref(idx), ctypes.byref(score)
         )
         return (found, idx.value, score.value)
+
+    def search_top_n(self, kb_handle, query: str, top_k: int = 3):
+        IndicesArray = ctypes.c_int * top_k
+        ScoresArray = ctypes.c_float * top_k
+        indices = IndicesArray()
+        scores = ScoresArray()
+
+        n_found = self.lib.ullama_kb_search_top_n(
+            kb_handle,
+            query.encode("utf-8"),
+            top_k,
+            indices,
+            scores,
+        )
+
+        return [(indices[i], scores[i]) for i in range(n_found)]
 
 def load_ullm_config(path: str) -> dict:
     with open(path, 'r') as f:
