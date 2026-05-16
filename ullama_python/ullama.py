@@ -75,8 +75,8 @@ class ULlamaWrapper:
 
         self.lib.ullama_ask.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
 
-        self.lib.ullama_get_token.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
-        self.lib.ullama_get_token.restype = ctypes.c_bool
+        self.lib.ullama_get_response.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
+        self.lib.ullama_get_response.restype = ctypes.c_bool
 
         self.lib.ullama_is_speaking.argtypes = [ctypes.c_void_p]
         self.lib.ullama_is_speaking.restype = ctypes.c_bool

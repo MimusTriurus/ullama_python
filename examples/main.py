@@ -198,7 +198,7 @@ if __name__ == "__main__":
                 api.lib.ullama_ask(worker, request.encode(ENCODING))
                 response = ''
                 while api.lib.ullama_is_speaking(worker):
-                    if api.lib.ullama_get_token(worker, token_buf, BUFFER_SIZE):
+                    if api.lib.ullama_get_response(worker, token_buf, BUFFER_SIZE):
                         response += token_buf.value.decode(ENCODING)
 
                 think_block = None
