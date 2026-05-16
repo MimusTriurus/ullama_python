@@ -116,14 +116,14 @@ if __name__ == "__main__":
     kb_init_result = False
     kb = {}
     if os.path.isfile(kb_cfg_f_path) and os.path.isfile(emb_model_f_path):
-        emb_model = api.lib.ullama_load_model(emb_model_f_path.encode(ENCODING))
         kb_worker_ptr = api.lib.ullama_kb_make()
         kb_cfg = json.loads(read_file(kb_cfg_f_path))
         kb_cfg['model'] = emb_model_f_path
         if lora_emb_model_f_path:
             kb_cfg['lora_adapter'] = lora_emb_model_f_path
         kb_cgf_str = json.dumps(kb_cfg).encode(ENCODING)
-        kb_init_result = api.lib.ullama_kb_init(kb_worker_ptr, kb_cgf_str, None)
+        emb_model = api.lib.ullama_load_model(kb_cgf_str)
+        kb_init_result = api.lib.ullama_kb_init(kb_worker_ptr, kb_cgf_str, emb_model)
         if kb_init_result:
             kb = read_kb_file(kb_triggers_f_path)
             if kb:
